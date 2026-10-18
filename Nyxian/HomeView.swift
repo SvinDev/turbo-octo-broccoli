@@ -98,11 +98,20 @@ struct HomeView: View {
                 }
                 Spacer(minLength: 0)
             }
-            Text(verbatim: exploitNote.text)
-                .font(.caption)
-                .foregroundColor(exploitNote.color)
-                .fixedSize(horizontal: false, vertical: true)
+            // Две строки фиксированной высоты — при смене эксплоита блок не меняет размер и экран не прыгает.
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: isExploitSupported
+                    ? "✓ Поддерживается на iOS \(DeviceInfo.systemVersion)"
+                    : "✕ Не поддерживается на iOS \(DeviceInfo.systemVersion)")
+                    .foregroundColor(isExploitSupported ? .green : .red)
+                Text(verbatim: exploit.supportedRange)
+                    .foregroundColor(.secondary)
+            }
+            .font(.caption)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
         }
+        .transaction { $0.animation = nil }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -111,15 +120,12 @@ struct HomeView: View {
     }
 
     /// Зависит и от выбранного эксплоита, и от версии iOS.
-    private var exploitNote: (text: String, color: Color) {
-        let ios = "iOS \(DeviceInfo.systemVersion)"
-        if exploit.supports(DeviceInfo.version) {
-            return ("✓ Поддерживается на \(ios) · \(exploit.supportedRange)", .green)
-        }
-        return ("✕ Не поддерживается на \(ios) · \(exploit.supportedRange)", .red)
+    private var isExploitSupported: Bool {
+        exploit.supports(DeviceInfo.version)
     }
 
     private var launchButton: some View {
+        // С неподдерживаемым эксплоитом запуск недоступен.
         Button(action: onLaunch) {
             Text("Запуск")
                 .font(.title3.weight(.bold))
@@ -127,8 +133,11 @@ struct HomeView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
                 .background(LinearGradient.nyxAccent, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-                .shadow(color: .nyxAccent.opacity(0.5), radius: 16, y: 6)
+                .opacity(isExploitSupported ? 1 : 0.35)
+                .shadow(color: .nyxAccent.opacity(isExploitSupported ? 0.5 : 0), radius: 16, y: 6)
         }
+        .disabled(!isExploitSupported)
+        .transaction { $0.animation = nil }
     }
 }
 

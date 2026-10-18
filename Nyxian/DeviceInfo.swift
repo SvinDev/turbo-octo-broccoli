@@ -5,8 +5,8 @@ enum DeviceInfo {
         UIDevice.current.systemVersion
     }
 
-    /// Диапазон из подписи «for iOS 17.0-26.0.1».
-    static let supportedRange = "17.0 – 26.0.1"
+    /// Общий диапазон всех эксплоитов: landa — с 16.0 (ниже приложение не ставится), CryptSn0w — до 27.1.
+    static let supportedRange = "16.0 – 27.1"
 
     /// Версия iOS как (major, minor, patch) — удобно сравнивать: version < (17, 0, 0).
     static var version: (Int, Int, Int) {

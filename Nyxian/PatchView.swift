@@ -8,7 +8,7 @@ struct PatchView: View {
     @State private var isLoadingVideo = false
     @State private var isTooQuietWarned = false
 
-    private let requiredLevel: Float = 0.7
+    private let requiredLevel: Float = 0.3
 
     private var isLoudEnough: Bool {
         volume.level >= requiredLevel

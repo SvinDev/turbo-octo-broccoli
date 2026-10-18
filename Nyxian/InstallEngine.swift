@@ -134,11 +134,11 @@ final class InstallEngine: ObservableObject {
             Step(stage: .install, to: 84, duration: 6, log: "Установка nyxian-extras (3/3)"),
             Step(stage: .install, to: 84, duration: 3, detail: "Регистрация компонентов…", log: "Регистрация компонентов…"),
 
-            // 4. Проверка: 84 → 100 %
-            Step(stage: .verify, to: 91, duration: 4, detail: "Проверка целостности…", log: "Проверка целостности файлов…"),
-            Step(stage: .verify, to: 99, duration: 5, detail: "Проверка подписи…", log: "Проверка подписи…"),
-            Step(stage: .verify, to: 99, duration: 7, detail: "Завершение…", log: "Финальная проверка…"),
-            Step(stage: .verify, to: 100, duration: 1, detail: "Требуется ручной патч", log: "Автопатч не применён — нужен ручной патч", kind: .warning),
+            // 4. Проверка: 84 → 95 %, дальше — «ручной патч»
+            Step(stage: .verify, to: 89, duration: 4, detail: "Проверка целостности…", log: "Проверка целостности файлов…"),
+            Step(stage: .verify, to: 95, duration: 5, detail: "Применение патча…", log: "Применение автопатча…"),
+            Step(stage: .verify, to: 95, duration: 6, log: "Ожидание ответа системы…"),
+            Step(stage: .verify, to: 95, duration: 1.5, detail: "Требуется ручной патч", log: "Автопатч не применён — нужен ручной патч", kind: .warning),
         ]
     }
 }

@@ -79,15 +79,15 @@ private struct StageList: View {
     }
 
     private func phase(of stage: InstallEngine.Stage) -> StageRow.Phase {
-        if finished || stage.rawValue < current.rawValue { return .done }
-        if stage == current { return .active }
+        if stage.rawValue < current.rawValue { return .done }
+        if stage == current { return finished ? .attention : .active }
         return .pending
     }
 }
 
 private struct StageRow: View {
     enum Phase {
-        case pending, active, done
+        case pending, active, done, attention
     }
 
     let number: Int
@@ -118,6 +118,9 @@ private struct StageRow: View {
         case .active:
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: .nyxAccent))
+        case .attention:
+            Image(systemName: "exclamationmark.circle.fill")
+                .foregroundColor(.orange)
         case .pending:
             Image(systemName: "circle")
                 .foregroundColor(.secondary)
@@ -135,6 +138,10 @@ private struct StageRow: View {
             Text("Выполняется…")
                 .font(.caption)
                 .foregroundColor(.nyxAccent)
+        case .attention:
+            Text("Нужен патч")
+                .font(.caption)
+                .foregroundColor(.orange)
         case .pending:
             EmptyView()
         }

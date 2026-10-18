@@ -157,6 +157,7 @@ private struct LogConsole: View {
                 Text("\(line.kind.prefix) \(line.text)")
                     .foregroundColor(line.kind.color)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                     .truncationMode(.tail)
             }
         }

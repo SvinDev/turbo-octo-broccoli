@@ -15,13 +15,12 @@ struct PatchView: View {
     private static let intro: [(delay: Double, kind: InstallEngine.LogLine.Kind, text: String)] = [
         (0.4, .warning, "Автопатч не применён (код 0x1F)"),
         (0.8, .info, "Переход в режим ручного патча…"),
-        (0.8, .info, "Патч подтверждается кнопками громкости"),
+        (0.8, .info, "Подтверждение кнопками громкости"),
         (0.8, .warning, "Ожидание патча от пользователя…"),
     ]
 
     private var isLoudEnough: Bool {
-        // Небольшой допуск: 8 шагов из 16 система может вернуть как 0.4999….
-        volume.level >= requiredLevel - 0.01
+        isLoud(volume.level)
     }
 
     private var volumePercent: Int {
@@ -46,7 +45,8 @@ struct PatchView: View {
             .padding(.top, 32)
         }
         .task { await playIntro() }
-        .onReceive(volume.$level) { _ in confirmIfReady() }
+        // Значение берём из события: @Published шлёт его до записи, и volume.level там ещё старый.
+        .onReceive(volume.$level) { level in confirmIfReady(level) }
     }
 
     private var header: some View {
@@ -99,6 +99,7 @@ struct PatchView: View {
             }
             .font(.system(size: 12, design: .monospaced))
             .lineLimit(1)
+            .minimumScaleFactor(0.8)
             .frame(maxWidth: .infinity, minHeight: 150, alignment: .topLeading)
             .padding(12)
         }
@@ -124,9 +125,9 @@ struct PatchView: View {
             .frame(width: 36, height: 36)
 
             VStack(alignment: .leading, spacing: 8) {
-                Text(isLoudEnough ? "Патч подтверждён" : "Прибавьте громкость")
+                Text(isConfirmed ? "Патч подтверждён" : "Прибавьте громкость")
                     .font(.subheadline.weight(.semibold))
-                Text(verbatim: isLoudEnough
+                Text(verbatim: isConfirmed
                     ? "Применяем патч…"
                     : "Нажимайте кнопку громкости вверх до отметки \(requiredPercent)% — патч применится сам.")
                     .font(.caption)
@@ -178,6 +179,7 @@ struct PatchView: View {
     }
 
     private func playIntro() async {
+        confirmIfReady(volume.level)
         guard lines.isEmpty else { return }
         for entry in Self.intro {
             try? await Task.sleep(nanoseconds: UInt64(entry.delay * 1_000_000_000))
@@ -188,9 +190,14 @@ struct PatchView: View {
     }
 
     /// Финал запускается в тот же миг, когда громкость дошла до нужной, — даже посреди вступления.
-    private func confirmIfReady() {
-        guard isLoudEnough else { return }
+    private func confirmIfReady(_ level: Float) {
+        guard isLoud(level) else { return }
         confirm()
+    }
+
+    private func isLoud(_ level: Float) -> Bool {
+        // Небольшой допуск: 8 шагов из 16 система может вернуть как 0.4999….
+        level >= requiredLevel - 0.01
     }
 
     private func confirm() {

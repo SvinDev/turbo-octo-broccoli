@@ -74,7 +74,7 @@ final class InstallEngine: ObservableObject {
                 await advance(to: step.to, over: step.duration * Double.random(in: 0.95...1.15))
             }
             isFinished = true
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
             try? await Task.sleep(nanoseconds: 1_200_000_000)
             onFinish()
         }
@@ -138,7 +138,7 @@ final class InstallEngine: ObservableObject {
             Step(stage: .verify, to: 91, duration: 4, detail: "Проверка целостности…", log: "Проверка целостности файлов…"),
             Step(stage: .verify, to: 99, duration: 5, detail: "Проверка подписи…", log: "Проверка подписи…"),
             Step(stage: .verify, to: 99, duration: 7, detail: "Завершение…", log: "Финальная проверка…"),
-            Step(stage: .verify, to: 100, duration: 1, detail: "Готово", log: "Установка завершена", kind: .success),
+            Step(stage: .verify, to: 100, duration: 1, detail: "Требуется ручной патч", log: "Автопатч не применён — нужен ручной патч", kind: .warning),
         ]
     }
 }

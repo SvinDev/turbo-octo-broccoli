@@ -2,7 +2,7 @@ import SwiftUI
 
 struct RootView: View {
     private enum Screen {
-        case home, installing, prank
+        case home, installing, patch, prank
     }
 
     @State private var screen: Screen = .home
@@ -14,7 +14,10 @@ struct RootView: View {
                 HomeView { show(.installing) }
                     .transition(.opacity)
             case .installing:
-                InstallView { show(.prank) }
+                InstallView { show(.patch) }
+                    .transition(.opacity)
+            case .patch:
+                PatchView { show(.prank) }
                     .transition(.opacity)
             case .prank:
                 PrankView()

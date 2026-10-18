@@ -8,11 +8,20 @@ enum DeviceInfo {
     /// Диапазон из подписи «for iOS 17.0-26.0.1».
     static let supportedRange = "17.0 – 26.0.1"
 
+    /// Версия iOS как (major, minor, patch) — удобно сравнивать: version < (17, 0, 0).
+    static var version: (Int, Int, Int) {
+        let os = ProcessInfo.processInfo.operatingSystemVersion
+        return (os.majorVersion, os.minorVersion, os.patchVersion)
+    }
+
     /// Всё вне диапазона якобы «патчится локально» и тоже подходит.
     static var needsLocalPatch: Bool {
-        let os = ProcessInfo.processInfo.operatingSystemVersion
-        let version = (os.majorVersion, os.minorVersion, os.patchVersion)
-        return version < (17, 0, 0) || version > (26, 0, 1)
+        version < (17, 0, 0) || version > (26, 0, 1)
+    }
+
+    /// Новее iOS 27.1 не берёт даже CryptSn0w.
+    static var isUnsupported: Bool {
+        version > (27, 1, 0)
     }
 
     /// Внутренний идентификатор модели, например "iPhone16,1".

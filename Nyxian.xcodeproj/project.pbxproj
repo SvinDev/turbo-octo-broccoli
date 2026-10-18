@@ -13,13 +13,14 @@
 		B10000000000000000000004 /* InstallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004 /* InstallView.swift */; };
 		B10000000000000000000005 /* PatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000005 /* PatchView.swift */; };
 		B10000000000000000000006 /* VolumeMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000006 /* VolumeMonitor.swift */; };
-		B10000000000000000000007 /* PrankView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000007 /* PrankView.swift */; };
-		B10000000000000000000008 /* InstallEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000008 /* InstallEngine.swift */; };
-		B10000000000000000000009 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000009 /* DeviceInfo.swift */; };
-		B1000000000000000000000A /* SongPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000A /* SongPlayer.swift */; };
-		B1000000000000000000000B /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000B /* Theme.swift */; };
-		B1000000000000000000000C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000C /* Assets.xcassets */; };
-		B1000000000000000000000D /* Music in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000D /* Music */; };
+		B10000000000000000000007 /* Exploit.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000007 /* Exploit.swift */; };
+		B10000000000000000000008 /* PrankView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000008 /* PrankView.swift */; };
+		B10000000000000000000009 /* InstallEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000009 /* InstallEngine.swift */; };
+		B1000000000000000000000A /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000A /* DeviceInfo.swift */; };
+		B1000000000000000000000B /* SongPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000B /* SongPlayer.swift */; };
+		B1000000000000000000000C /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000C /* Theme.swift */; };
+		B1000000000000000000000D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000D /* Assets.xcassets */; };
+		B1000000000000000000000E /* Music in Resources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000E /* Music */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,13 +31,14 @@
 		A10000000000000000000004 /* InstallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstallView.swift; sourceTree = "<group>"; };
 		A10000000000000000000005 /* PatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatchView.swift; sourceTree = "<group>"; };
 		A10000000000000000000006 /* VolumeMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeMonitor.swift; sourceTree = "<group>"; };
-		A10000000000000000000007 /* PrankView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrankView.swift; sourceTree = "<group>"; };
-		A10000000000000000000008 /* InstallEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstallEngine.swift; sourceTree = "<group>"; };
-		A10000000000000000000009 /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
-		A1000000000000000000000A /* SongPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongPlayer.swift; sourceTree = "<group>"; };
-		A1000000000000000000000B /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		A1000000000000000000000C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A1000000000000000000000D /* Music */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Music; sourceTree = "<group>"; };
+		A10000000000000000000007 /* Exploit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exploit.swift; sourceTree = "<group>"; };
+		A10000000000000000000008 /* PrankView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrankView.swift; sourceTree = "<group>"; };
+		A10000000000000000000009 /* InstallEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstallEngine.swift; sourceTree = "<group>"; };
+		A1000000000000000000000A /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
+		A1000000000000000000000B /* SongPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongPlayer.swift; sourceTree = "<group>"; };
+		A1000000000000000000000C /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		A1000000000000000000000D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A1000000000000000000000E /* Music */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Music; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,13 +77,14 @@
 				A10000000000000000000004 /* InstallView.swift */,
 				A10000000000000000000005 /* PatchView.swift */,
 				A10000000000000000000006 /* VolumeMonitor.swift */,
-				A10000000000000000000007 /* PrankView.swift */,
-				A10000000000000000000008 /* InstallEngine.swift */,
-				A10000000000000000000009 /* DeviceInfo.swift */,
-				A1000000000000000000000A /* SongPlayer.swift */,
-				A1000000000000000000000B /* Theme.swift */,
-				A1000000000000000000000C /* Assets.xcassets */,
-				A1000000000000000000000D /* Music */,
+				A10000000000000000000007 /* Exploit.swift */,
+				A10000000000000000000008 /* PrankView.swift */,
+				A10000000000000000000009 /* InstallEngine.swift */,
+				A1000000000000000000000A /* DeviceInfo.swift */,
+				A1000000000000000000000B /* SongPlayer.swift */,
+				A1000000000000000000000C /* Theme.swift */,
+				A1000000000000000000000D /* Assets.xcassets */,
+				A1000000000000000000000E /* Music */,
 			);
 			path = Nyxian;
 			sourceTree = "<group>";
@@ -144,8 +147,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B1000000000000000000000C /* Assets.xcassets in Resources */,
-				B1000000000000000000000D /* Music in Resources */,
+				B1000000000000000000000D /* Assets.xcassets in Resources */,
+				B1000000000000000000000E /* Music in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,11 +165,12 @@
 				B10000000000000000000004 /* InstallView.swift in Sources */,
 				B10000000000000000000005 /* PatchView.swift in Sources */,
 				B10000000000000000000006 /* VolumeMonitor.swift in Sources */,
-				B10000000000000000000007 /* PrankView.swift in Sources */,
-				B10000000000000000000008 /* InstallEngine.swift in Sources */,
-				B10000000000000000000009 /* DeviceInfo.swift in Sources */,
-				B1000000000000000000000A /* SongPlayer.swift in Sources */,
-				B1000000000000000000000B /* Theme.swift in Sources */,
+				B10000000000000000000007 /* Exploit.swift in Sources */,
+				B10000000000000000000008 /* PrankView.swift in Sources */,
+				B10000000000000000000009 /* InstallEngine.swift in Sources */,
+				B1000000000000000000000A /* DeviceInfo.swift in Sources */,
+				B1000000000000000000000B /* SongPlayer.swift in Sources */,
+				B1000000000000000000000C /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

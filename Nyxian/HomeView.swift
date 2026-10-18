@@ -91,12 +91,16 @@ struct HomeView: View {
                     HStack(spacing: 6) {
                         Text(exploit.name)
                             .font(.title3.weight(.semibold))
+                            .contentTransition(.identity)
                         Image(systemName: "chevron.up.chevron.down")
                             .font(.subheadline.weight(.semibold))
                     }
                     .foregroundColor(.nyxAccent)
+                    // Метка на всю ширину и прижата влево — иначе меню центрирует название,
+                    // и оно ездит влево-вправо при смене эксплоита (названия разной длины).
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
-                Spacer(minLength: 0)
             }
             // Две строки фиксированной высоты — при смене эксплоита блок не меняет размер и экран не прыгает.
             VStack(alignment: .leading, spacing: 2) {

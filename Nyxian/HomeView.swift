@@ -13,15 +13,15 @@ struct HomeView: View {
             NyxBackground()
 
             GeometryReader { proxy in
-                // На низких экранах (iPhone SE) шапка компактнее, чтобы всё влезло без прокрутки.
-                let isCompact = proxy.size.height < 700
+                // На низких экранах (SE, mini) всё компактнее, чтобы влезло без прокрутки.
+                let isCompact = proxy.size.height < 760
 
-                VStack(spacing: 24) {
-                    Spacer()
+                VStack(spacing: isCompact ? 14 : 24) {
+                    Spacer(minLength: 0)
                     header(isCompact: isCompact)
                     infoCard
                     exploitCard
-                    Spacer()
+                    Spacer(minLength: 0)
                     launchButton
                 }
                 .padding(.horizontal, 24)
@@ -81,13 +81,21 @@ struct HomeView: View {
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.nyxAccent)
                     .frame(width: 24)
-                Picker("Эксплоит", selection: $exploit) {
-                    ForEach(Exploit.available) { exploit in
-                        Text(exploit.name).tag(exploit)
+                Menu {
+                    Picker("Эксплоит", selection: $exploit) {
+                        ForEach(Exploit.allCases) { exploit in
+                            Text(exploit.name).tag(exploit)
+                        }
                     }
+                } label: {
+                    HStack(spacing: 6) {
+                        Text(exploit.name)
+                            .font(.title3.weight(.semibold))
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.subheadline.weight(.semibold))
+                    }
+                    .foregroundColor(.nyxAccent)
                 }
-                .pickerStyle(.menu)
-                .tint(.nyxAccent)
                 Spacer(minLength: 0)
             }
             Text(verbatim: exploitNote.text)
@@ -102,15 +110,13 @@ struct HomeView: View {
         .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Color.nyxStroke))
     }
 
+    /// Зависит и от выбранного эксплоита, и от версии iOS.
     private var exploitNote: (text: String, color: Color) {
         let ios = "iOS \(DeviceInfo.systemVersion)"
-        if isUnsupported && exploit == .cryptsn0w {
-            return ("CryptSn0w работает до iOS 27.1 — \(ios) не поддерживается", .red)
-        }
         if exploit.supports(DeviceInfo.version) {
-            return ("\(exploit.supportedRange) · подходит для \(ios)", .green)
+            return ("✓ Поддерживается на \(ios) · \(exploit.supportedRange)", .green)
         }
-        return ("\(exploit.supportedRange) · не рекомендуется для \(ios)", .orange)
+        return ("✕ Не поддерживается на \(ios) · \(exploit.supportedRange)", .red)
     }
 
     private var launchButton: some View {

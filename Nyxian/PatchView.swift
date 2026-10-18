@@ -8,10 +8,11 @@ struct PatchView: View {
     @State private var isLoadingVideo = false
     @State private var isTooQuietWarned = false
 
-    private let requiredLevel: Float = 0.3
+    private let requiredLevel: Float = 0.5
 
     private var isLoudEnough: Bool {
-        volume.level >= requiredLevel
+        // Небольшой допуск: 8 шагов из 16 система может вернуть как 0.4999….
+        volume.level >= requiredLevel - 0.01
     }
 
     var body: some View {

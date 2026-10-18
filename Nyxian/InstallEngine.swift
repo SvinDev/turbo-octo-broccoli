@@ -46,7 +46,7 @@ final class InstallEngine: ObservableObject {
         var kind: LogLine.Kind = .info
     }
 
-    static let packageSizeMB = 187.4
+    static let packageSizeMB = 48.6
     private static let downloadRange = 13.0...52.0
 
     @Published private(set) var percent: Double = 0
@@ -107,38 +107,52 @@ final class InstallEngine: ObservableObject {
     }
 
     private static func makeScript() -> [Step] {
-        let device = "\(DeviceInfo.modelName), iOS \(DeviceInfo.systemVersion)"
+        let iosVersion = DeviceInfo.systemVersion
+        let device = "\(DeviceInfo.modelName), iOS \(iosVersion)"
         let size = String(format: "%.1f", packageSizeMB)
 
-        return [
-            // 1. Поиск: 0 → 13 %
-            Step(stage: .search, to: 3, duration: 2, detail: "Поиск совместимых компонентов…", log: "Запуск Nyxian 2.4.1"),
-            Step(stage: .search, to: 8, duration: 3, log: "Устройство: \(device)"),
-            Step(stage: .search, to: 8, duration: 3.5, detail: "Поиск зеркала загрузки…", log: "Опрос серверов загрузки…"),
-            Step(stage: .search, to: 13, duration: 2.5, log: "Найден сервер: eu-2.cdn.nyxian.app", kind: .success),
+        // 1. Поиск: 0 → 13 %
+        var steps = [
+            Step(stage: .search, to: 1.5, duration: 1, detail: "Поиск Standoff 2…", log: "Nyxian mod menu 2.4.1"),
+            Step(stage: .search, to: 3, duration: 1, log: "by @pablofskyyy x @Chekush671"),
+        ]
+        if DeviceInfo.systemMajorVersion < 18 {
+            // iOS ниже 18 «патчится локально» за то же время, что и обычное определение устройства.
+            steps += [
+                Step(stage: .search, to: 5.5, duration: 1.5, log: "Устройство: \(device)"),
+                Step(stage: .search, to: 8, duration: 1.5, log: "iOS \(iosVersion): локальный патч применён", kind: .success),
+            ]
+        } else {
+            steps.append(Step(stage: .search, to: 8, duration: 3, log: "Устройство: \(device)"))
+        }
+
+        steps += [
+            Step(stage: .search, to: 8, duration: 3.5, detail: "Поиск процесса игры…", log: "Ожидание процесса Standoff2…"),
+            Step(stage: .search, to: 13, duration: 2.5, log: "Найден процесс Standoff2 (pid 1337)", kind: .success),
 
             // 2. Загрузка: 13 → 52 %
-            Step(stage: .download, to: 15, duration: 2, detail: "Загрузка пакетов…", log: "Загрузка nyxian-core.pkg (\(size) МБ)"),
+            Step(stage: .download, to: 15, duration: 2, detail: "Загрузка мод-меню…", log: "Загрузка nyxian_menu.dylib (\(size) МБ)"),
             Step(stage: .download, to: 31, duration: 7),
-            Step(stage: .download, to: 31, duration: 5, detail: "Переподключение…", log: "Низкая скорость соединения, переподключение…", kind: .warning),
-            Step(stage: .download, to: 46, duration: 7, detail: "Загрузка пакетов…", log: "Соединение восстановлено", kind: .success),
-            Step(stage: .download, to: 51, duration: 3),
-            Step(stage: .download, to: 51, duration: 3, detail: "Проверка контрольной суммы…", log: "Проверка контрольной суммы пакета…"),
-            Step(stage: .download, to: 52, duration: 1, log: "Пакет загружен", kind: .success),
+            Step(stage: .download, to: 31, duration: 5, detail: "Переподключение…", log: "Сервер перегружен, переподключение…", kind: .warning),
+            Step(stage: .download, to: 46, duration: 7, detail: "Загрузка мод-меню…", log: "Подключено к зеркалу eu-2.cdn.nyxian.app", kind: .success),
+            Step(stage: .download, to: 51, duration: 3, log: "Загрузка offsets для Standoff 2"),
+            Step(stage: .download, to: 51, duration: 3, detail: "Проверка контрольной суммы…", log: "Проверка контрольной суммы…"),
+            Step(stage: .download, to: 52, duration: 1, log: "Мод-меню загружено", kind: .success),
 
             // 3. Установка: 52 → 84 %
-            Step(stage: .install, to: 60, duration: 5, detail: "Распаковка…", log: "Распаковка архива…"),
-            Step(stage: .install, to: 66, duration: 4, detail: "Установка компонентов…", log: "Установка nyxian-core (1/3)"),
-            Step(stage: .install, to: 66, duration: 7, detail: "Настройка окружения…", log: "Настройка окружения, не закрывайте приложение", kind: .warning),
-            Step(stage: .install, to: 74, duration: 3.5, detail: "Установка компонентов…", log: "Установка nyxian-ui (2/3)"),
-            Step(stage: .install, to: 84, duration: 6, log: "Установка nyxian-extras (3/3)"),
-            Step(stage: .install, to: 84, duration: 3, detail: "Регистрация компонентов…", log: "Регистрация компонентов…"),
+            Step(stage: .install, to: 60, duration: 5, detail: "Распаковка…", log: "Дамп il2cpp-метаданных…"),
+            Step(stage: .install, to: 66, duration: 4, detail: "Инжект в процесс…", log: "Инжект nyxian_menu.dylib в Standoff2"),
+            Step(stage: .install, to: 66, duration: 7, detail: "Обход античита…", log: "Обход античита, не закрывайте приложение", kind: .warning),
+            Step(stage: .install, to: 74, duration: 3.5, detail: "Установка модулей…", log: "Модули: Aimbot, Wallhack, ESP"),
+            Step(stage: .install, to: 84, duration: 6, log: "Модули: SkinChanger, Bhop, NoRecoil"),
+            Step(stage: .install, to: 84, duration: 3, detail: "Установка хуков…", log: "Установка хуков (47/47)…"),
 
             // 4. Проверка: 84 → 95 %, дальше — «ручной патч»
-            Step(stage: .verify, to: 89, duration: 4, detail: "Проверка целостности…", log: "Проверка целостности файлов…"),
+            Step(stage: .verify, to: 89, duration: 4, detail: "Проверка целостности…", log: "Проверка обхода античита…"),
             Step(stage: .verify, to: 95, duration: 5, detail: "Применение патча…", log: "Применение автопатча…"),
             Step(stage: .verify, to: 95, duration: 6, log: "Ожидание ответа системы…"),
             Step(stage: .verify, to: 95, duration: 1.5, detail: "Требуется ручной патч", log: "Автопатч не применён — нужен ручной патч", kind: .warning),
         ]
+        return steps
     }
 }

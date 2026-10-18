@@ -57,7 +57,7 @@ private struct ProgressRing: View {
                 .stroke(LinearGradient.nyxAccent, style: StrokeStyle(lineWidth: 14, lineCap: .round))
                 .rotationEffect(.degrees(-90))
                 .animation(.linear(duration: 0.25), value: percent)
-            Text("\(Int(percent))%")
+            Text(verbatim: "\(Int(percent))%")
                 .font(.system(size: 44, weight: .bold, design: .rounded).monospacedDigit())
         }
     }
@@ -155,7 +155,7 @@ private struct LogConsole: View {
         VStack(alignment: .leading, spacing: 3) {
             ForEach(lines.suffix(6)) { line in
                 Text("\(line.kind.prefix) \(line.text)")
-                    .foregroundColor(color(for: line.kind))
+                    .foregroundColor(line.kind.color)
                     .lineLimit(1)
                     .truncationMode(.tail)
             }
@@ -164,13 +164,5 @@ private struct LogConsole: View {
         .frame(maxWidth: .infinity, minHeight: 100, alignment: .topLeading)
         .padding(12)
         .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.black.opacity(0.35)))
-    }
-
-    private func color(for kind: InstallEngine.LogLine.Kind) -> Color {
-        switch kind {
-        case .info: return .secondary
-        case .success: return .green
-        case .warning: return .orange
-        }
     }
 }

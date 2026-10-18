@@ -27,3 +27,13 @@ struct NyxBackground: View {
         .ignoresSafeArea()
     }
 }
+
+extension InstallEngine.LogLine.Kind {
+    var color: Color {
+        switch self {
+        case .info: return .secondary
+        case .success: return .green
+        case .warning: return .orange
+        }
+    }
+}

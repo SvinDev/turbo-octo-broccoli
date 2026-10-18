@@ -1,18 +1,35 @@
 import SwiftUI
 
-/// «Нужно вручную сделать патч»: фейковая видеоинструкция и просьба прибавить звук.
+/// «Нужно вручную сделать патч»: консоль ждёт, пока громкость поднимут до нужного уровня,
+/// и сама запускает финал — без кнопок.
 struct PatchView: View {
-    let onPlay: () -> Void
+    let onConfirmed: () -> Void
 
     @StateObject private var volume = VolumeMonitor()
-    @State private var isLoadingVideo = false
-    @State private var isTooQuietWarned = false
+    @State private var lines: [InstallEngine.LogLine] = []
+    @State private var isWaiting = false
+    @State private var isConfirmed = false
 
     private let requiredLevel: Float = 0.5
+
+    private static let intro: [(delay: Double, kind: InstallEngine.LogLine.Kind, text: String)] = [
+        (0.4, .warning, "Автопатч не применён (код 0x1F)"),
+        (0.8, .info, "Переход в режим ручного патча…"),
+        (0.8, .info, "Патч подтверждается кнопками громкости"),
+        (0.8, .warning, "Ожидание патча от пользователя…"),
+    ]
 
     private var isLoudEnough: Bool {
         // Небольшой допуск: 8 шагов из 16 система может вернуть как 0.4999….
         volume.level >= requiredLevel - 0.01
+    }
+
+    private var volumePercent: Int {
+        Int((volume.level * 100).rounded())
+    }
+
+    private var requiredPercent: Int {
+        Int((requiredLevel * 100).rounded())
     }
 
     var body: some View {
@@ -21,13 +38,15 @@ struct PatchView: View {
 
             VStack(spacing: 24) {
                 header
-                videoPlayer
+                console
                 volumeCard
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 24)
             .padding(.top, 32)
         }
+        .task { await playIntro() }
+        .onReceive(volume.$level) { _ in confirmIfReady() }
     }
 
     private var header: some View {
@@ -38,84 +57,56 @@ struct PatchView: View {
             Text("Нужно вручную сделать патч")
                 .font(.title2.weight(.bold))
                 .multilineTextAlignment(.center)
-            Text("Автоматическая установка не смогла применить патч. Посмотрите короткую видеоинструкцию — это займёт пару минут.")
+            Text("Автопатч не смог применить изменения. Подтвердите патч вручную — прибавьте громкость кнопками сбоку, дальше всё произойдёт автоматически.")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
     }
 
-    private var videoPlayer: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(LinearGradient(
-                    colors: [Color(white: 0.14), .black],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ))
-
-            VStack(spacing: 6) {
-                Image(systemName: "moon.stars.fill")
-                    .font(.system(size: 34))
-                Text("Ручной патч Nyxian")
-                    .font(.headline)
-                Text("шаг 1 из 3")
-                    .font(.caption)
-            }
-            .foregroundColor(.white.opacity(0.25))
-
-            Group {
-                if isLoadingVideo {
-                    VStack(spacing: 10) {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .scaleEffect(1.4)
-                        Text("Загрузка видео…")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.8))
-                    }
-                } else {
-                    Image(systemName: "play.fill")
-                        .font(.system(size: 30))
-                        .foregroundColor(.black)
-                        .offset(x: 2)
-                        .frame(width: 68, height: 68)
-                        .background(Circle().fill(Color.white.opacity(0.9)))
-                }
-            }
-
-            VStack {
-                HStack {
-                    Text("Видеоинструкция")
-                        .font(.caption2.weight(.semibold))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Capsule().fill(Color.black.opacity(0.5)))
-                    Spacer()
+    private var console: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 6) {
+                ForEach([Color.red, .yellow, .green], id: \.self) { color in
+                    Circle()
+                        .fill(color.opacity(0.8))
+                        .frame(width: 9, height: 9)
                 }
                 Spacer()
-                videoControls
+                Text(verbatim: "nyxian — manual patch")
+                    .foregroundColor(.secondary)
+                Spacer()
+                Color.clear.frame(width: 39, height: 9)
             }
+            .font(.system(size: 11, design: .monospaced))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(Color.white.opacity(0.06))
+
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(lines) { line in
+                    Text("\(line.kind.prefix) \(line.text)")
+                        .foregroundColor(line.kind.color)
+                }
+                if isWaiting && !isConfirmed {
+                    TimelineView(.periodic(from: .now, by: 0.5)) { context in
+                        let isCursorOn = Int(context.date.timeIntervalSinceReferenceDate * 2) % 2 == 0
+
+                        Text(verbatim: "> громкость \(volumePercent)% / \(requiredPercent)%" + (isCursorOn ? " ▌" : ""))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            .font(.system(size: 12, design: .monospaced))
+            .lineLimit(1)
+            .frame(maxWidth: .infinity, minHeight: 150, alignment: .topLeading)
             .padding(12)
         }
-        .aspectRatio(16 / 9, contentMode: .fit)
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(Color.nyxStroke))
-        .contentShape(Rectangle())
-        .onTapGesture(perform: play)
-    }
-
-    private var videoControls: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "play.fill")
-            Text("0:00")
-            Capsule()
-                .fill(Color.white.opacity(0.25))
-                .frame(height: 4)
-            Text("2:47")
-            Image(systemName: speakerIcon)
-        }
-        .font(.caption2.monospacedDigit())
-        .foregroundColor(.white.opacity(0.85))
+        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.black.opacity(0.55)))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Color.nyxStroke))
+        // Скрытый запасной выход, если громкость не меняется (например, в симуляторе).
+        .onLongPressGesture(minimumDuration: 2) { confirm() }
     }
 
     private var volumeCard: some View {
@@ -133,11 +124,13 @@ struct PatchView: View {
             .frame(width: 36, height: 36)
 
             VStack(alignment: .leading, spacing: 8) {
-                Text(isLoudEnough ? "Громкость в порядке" : "Прибавьте громкость")
+                Text(isLoudEnough ? "Патч подтверждён" : "Прибавьте громкость")
                     .font(.subheadline.weight(.semibold))
-                Text(volumeHint)
+                Text(verbatim: isLoudEnough
+                    ? "Применяем патч…"
+                    : "Нажимайте кнопку громкости вверх до отметки \(requiredPercent)% — патч применится сам.")
                     .font(.caption)
-                    .foregroundColor(isTooQuietWarned && !isLoudEnough ? .orange : .secondary)
+                    .foregroundColor(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                 volumeBar
             }
@@ -146,7 +139,7 @@ struct PatchView: View {
         .background(RoundedRectangle(cornerRadius: 18, style: .continuous).fill(Color.nyxCard))
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(isTooQuietWarned && !isLoudEnough ? Color.orange : Color.nyxStroke)
+                .stroke(isLoudEnough ? Color.green.opacity(0.6) : Color.nyxStroke)
         )
     }
 
@@ -169,20 +162,10 @@ struct PatchView: View {
             }
             .frame(height: 8)
 
-            Text("\(Int((volume.level * 100).rounded()))%")
+            Text(verbatim: "\(volumePercent)%")
                 .font(.caption.monospacedDigit().weight(.semibold))
                 .frame(width: 40, alignment: .trailing)
         }
-    }
-
-    private var volumeHint: String {
-        if isLoudEnough {
-            return "Можно смотреть видео."
-        }
-        if isTooQuietWarned {
-            return "Слишком тихо! Прибавьте звук кнопками сбоку — без звука инструкцию не понять."
-        }
-        return "В видео голосовые инструкции — поставьте громкость не меньше \(Int((requiredLevel * 100).rounded()))%."
     }
 
     private var speakerIcon: String {
@@ -194,17 +177,36 @@ struct PatchView: View {
         }
     }
 
-    private func play() {
-        guard !isLoadingVideo else { return }
-        // Первый раз при тихом звуке просим прибавить, со второго нажатия пускаем в любом случае.
-        if !isLoudEnough && !isTooQuietWarned {
-            isTooQuietWarned = true
-            UINotificationFeedbackGenerator().notificationOccurred(.warning)
-            return
+    private func playIntro() async {
+        guard lines.isEmpty else { return }
+        for entry in Self.intro {
+            try? await Task.sleep(nanoseconds: UInt64(entry.delay * 1_000_000_000))
+            append(entry.kind, entry.text)
         }
-        isLoadingVideo = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            onPlay()
+        isWaiting = true
+        confirmIfReady()
+    }
+
+    /// Запускает финал, как только вступление показано и громкость дотянули до нужной.
+    private func confirmIfReady() {
+        guard isWaiting, isLoudEnough else { return }
+        confirm()
+    }
+
+    private func confirm() {
+        guard !isConfirmed else { return }
+        isConfirmed = true
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        Task { @MainActor in
+            append(.success, "Патч подтверждён (громкость \(volumePercent)%)")
+            try? await Task.sleep(nanoseconds: 700_000_000)
+            append(.info, "Применение патча…")
+            try? await Task.sleep(nanoseconds: 1_300_000_000)
+            onConfirmed()
         }
+    }
+
+    private func append(_ kind: InstallEngine.LogLine.Kind, _ text: String) {
+        lines.append(InstallEngine.LogLine(id: lines.count, kind: kind, text: text))
     }
 }

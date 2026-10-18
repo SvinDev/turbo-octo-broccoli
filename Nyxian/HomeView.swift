@@ -3,7 +3,8 @@ import SwiftUI
 struct HomeView: View {
     let onLaunch: () -> Void
 
-    private let isSupported = DeviceInfo.systemMajorVersion >= 18
+    /// iOS ниже 18 тоже «подходит» — якобы через локальный патч.
+    private let needsLocalPatch = DeviceInfo.systemMajorVersion < 18
 
     var body: some View {
         ZStack {
@@ -29,9 +30,15 @@ struct HomeView: View {
             Text("Nyxian")
                 .font(.system(size: 52, weight: .heavy, design: .rounded))
                 .foregroundStyle(LinearGradient.nyxAccent)
-            Text("версия 2.4.1")
-                .font(.footnote)
-                .foregroundColor(.secondary)
+            VStack(spacing: 4) {
+                Text(verbatim: "@pablofskyyy x @Chekush671")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(.nyxAccent)
+                Text(verbatim: "external mod menu for “standoff2” for iOS 17.0-26.0.1")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
         }
     }
 
@@ -44,10 +51,10 @@ struct HomeView: View {
             InfoRow(icon: "checkmark.shield.fill", title: "Поддерживаемые iOS", value: "18.0 – 27.2+")
             Divider().overlay(Color.nyxStroke)
             InfoRow(
-                icon: isSupported ? "checkmark.circle.fill" : "exclamationmark.triangle.fill",
+                icon: "checkmark.circle.fill",
                 title: "Статус",
-                value: isSupported ? "Совместимо" : "Ограниченная поддержка",
-                valueColor: isSupported ? .green : .orange
+                value: needsLocalPatch ? "Совместимо · локальный патч" : "Совместимо",
+                valueColor: .green
             )
         }
         .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.nyxCard))

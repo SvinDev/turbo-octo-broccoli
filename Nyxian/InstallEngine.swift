@@ -116,8 +116,8 @@ final class InstallEngine: ObservableObject {
             Step(stage: .search, to: 1.5, duration: 1, detail: "Поиск Standoff 2…", log: "Nyxian mod menu 2.4.1"),
             Step(stage: .search, to: 3, duration: 1, log: "by @pablofskyyy x @Chekush671"),
         ]
-        if DeviceInfo.systemMajorVersion < 18 {
-            // iOS ниже 18 «патчится локально» за то же время, что и обычное определение устройства.
+        if DeviceInfo.needsLocalPatch {
+            // iOS вне диапазона «патчится локально» за то же время, что и обычное определение устройства.
             steps += [
                 Step(stage: .search, to: 5.5, duration: 1.5, log: "Устройство: \(device)"),
                 Step(stage: .search, to: 8, duration: 1.5, log: "iOS \(iosVersion): локальный патч применён", kind: .success),

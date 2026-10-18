@@ -5,8 +5,14 @@ enum DeviceInfo {
         UIDevice.current.systemVersion
     }
 
-    static var systemMajorVersion: Int {
-        ProcessInfo.processInfo.operatingSystemVersion.majorVersion
+    /// Диапазон из подписи «for iOS 17.0-26.0.1».
+    static let supportedRange = "17.0 – 26.0.1"
+
+    /// Всё вне диапазона якобы «патчится локально» и тоже подходит.
+    static var needsLocalPatch: Bool {
+        let os = ProcessInfo.processInfo.operatingSystemVersion
+        let version = (os.majorVersion, os.minorVersion, os.patchVersion)
+        return version < (17, 0, 0) || version > (26, 0, 1)
     }
 
     /// Внутренний идентификатор модели, например "iPhone16,1".

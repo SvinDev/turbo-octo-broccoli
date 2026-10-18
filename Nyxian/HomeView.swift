@@ -3,8 +3,7 @@ import SwiftUI
 struct HomeView: View {
     let onLaunch: () -> Void
 
-    /// iOS ниже 18 тоже «подходит» — якобы через локальный патч.
-    private let needsLocalPatch = DeviceInfo.systemMajorVersion < 18
+    private let needsLocalPatch = DeviceInfo.needsLocalPatch
 
     var body: some View {
         ZStack {
@@ -48,7 +47,7 @@ struct HomeView: View {
             Divider().overlay(Color.nyxStroke)
             InfoRow(icon: "gearshape.fill", title: "Версия iOS", value: "iOS \(DeviceInfo.systemVersion)")
             Divider().overlay(Color.nyxStroke)
-            InfoRow(icon: "checkmark.shield.fill", title: "Поддерживаемые iOS", value: "18.0 – 27.2+")
+            InfoRow(icon: "checkmark.shield.fill", title: "Поддерживаемые iOS", value: DeviceInfo.supportedRange)
             Divider().overlay(Color.nyxStroke)
             InfoRow(
                 icon: "checkmark.circle.fill",

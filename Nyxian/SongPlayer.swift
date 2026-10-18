@@ -7,6 +7,8 @@ final class SongPlayer {
     private var player: AVAudioPlayer?
 
     func play() {
+        // Уже играет (например, запущена с экрана патча) — не начинаем заново.
+        guard player?.isPlaying != true else { return }
         guard let url = Self.songURL() else {
             print("Nyxian: в папке Music нет аудиофайла")
             return

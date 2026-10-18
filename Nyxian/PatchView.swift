@@ -181,29 +181,25 @@ struct PatchView: View {
         guard lines.isEmpty else { return }
         for entry in Self.intro {
             try? await Task.sleep(nanoseconds: UInt64(entry.delay * 1_000_000_000))
+            guard !Task.isCancelled else { return }
             append(entry.kind, entry.text)
         }
         isWaiting = true
-        confirmIfReady()
     }
 
-    /// Запускает финал, как только вступление показано и громкость дотянули до нужной.
+    /// Финал запускается в тот же миг, когда громкость дошла до нужной, — даже посреди вступления.
     private func confirmIfReady() {
-        guard isWaiting, isLoudEnough else { return }
+        guard isLoudEnough else { return }
         confirm()
     }
 
     private func confirm() {
         guard !isConfirmed else { return }
         isConfirmed = true
+        // Песня стартует сразу, не дожидаясь смены экрана.
+        SongPlayer.shared.play()
         UINotificationFeedbackGenerator().notificationOccurred(.success)
-        Task { @MainActor in
-            append(.success, "Патч подтверждён (громкость \(volumePercent)%)")
-            try? await Task.sleep(nanoseconds: 700_000_000)
-            append(.info, "Применение патча…")
-            try? await Task.sleep(nanoseconds: 1_300_000_000)
-            onConfirmed()
-        }
+        onConfirmed()
     }
 
     private func append(_ kind: InstallEngine.LogLine.Kind, _ text: String) {

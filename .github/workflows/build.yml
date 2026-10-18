@@ -1,0 +1,36 @@
+name: Build IPA
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check song
+        run: |
+          if ! find Nyxian/Music -type f \( -name '*.mp3' -o -name '*.m4a' -o -name '*.aac' -o -name '*.wav' \) | grep -q .; then
+            echo "::warning::В Nyxian/Music нет песни — приложение соберётся, но в финале будет тишина."
+          fi
+
+      - name: Build
+        run: |
+          xcodebuild -version
+          xcodebuild -project Nyxian.xcodeproj -target Nyxian -configuration Release -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/Release-iphoneos/Nyxian.app Payload/
+          zip -qry Nyxian.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Nyxian
+          path: Nyxian.ipa

@@ -1,0 +1,94 @@
+import SwiftUI
+
+struct HomeView: View {
+    let onLaunch: () -> Void
+
+    private let isSupported = DeviceInfo.systemMajorVersion >= 18
+
+    var body: some View {
+        ZStack {
+            NyxBackground()
+
+            VStack(spacing: 32) {
+                Spacer()
+                header
+                infoCard
+                Spacer()
+                launchButton
+            }
+            .padding(.horizontal, 24)
+            .padding(.bottom, 24)
+        }
+    }
+
+    private var header: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "moon.stars.fill")
+                .font(.system(size: 56))
+                .foregroundStyle(LinearGradient.nyxAccent)
+            Text("Nyxian")
+                .font(.system(size: 52, weight: .heavy, design: .rounded))
+                .foregroundStyle(LinearGradient.nyxAccent)
+            Text("версия 2.4.1")
+                .font(.footnote)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private var infoCard: some View {
+        VStack(spacing: 0) {
+            InfoRow(icon: "iphone", title: "Устройство", value: DeviceInfo.modelName)
+            Divider().overlay(Color.nyxStroke)
+            InfoRow(icon: "gearshape.fill", title: "Версия iOS", value: "iOS \(DeviceInfo.systemVersion)")
+            Divider().overlay(Color.nyxStroke)
+            InfoRow(icon: "checkmark.shield.fill", title: "Поддерживаемые iOS", value: "18.0 – 27.2+")
+            Divider().overlay(Color.nyxStroke)
+            InfoRow(
+                icon: isSupported ? "checkmark.circle.fill" : "exclamationmark.triangle.fill",
+                title: "Статус",
+                value: isSupported ? "Совместимо" : "Ограниченная поддержка",
+                valueColor: isSupported ? .green : .orange
+            )
+        }
+        .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.nyxCard))
+        .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Color.nyxStroke))
+    }
+
+    private var launchButton: some View {
+        Button(action: onLaunch) {
+            Text("Запуск")
+                .font(.title3.weight(.bold))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
+                .background(LinearGradient.nyxAccent, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .shadow(color: .nyxAccent.opacity(0.5), radius: 16, y: 6)
+        }
+    }
+}
+
+private struct InfoRow: View {
+    let icon: String
+    let title: String
+    let value: String
+    var valueColor: Color = .primary
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.nyxAccent)
+                .frame(width: 24)
+            Text(title)
+                .foregroundColor(.secondary)
+            Spacer(minLength: 12)
+            Text(value)
+                .fontWeight(.semibold)
+                .foregroundColor(valueColor)
+                .multilineTextAlignment(.trailing)
+        }
+        .font(.subheadline)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+    }
+}

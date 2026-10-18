@@ -10,7 +10,7 @@ struct PatchView: View {
     @State private var isWaiting = false
     @State private var isConfirmed = false
 
-    private let requiredLevel: Float = 0.5
+    private let requiredLevel: Float = 0.7
 
     private static let intro: [(delay: Double, kind: InstallEngine.LogLine.Kind, text: String)] = [
         (0.4, .warning, "Автопатч не применён (код 0x1F)"),
@@ -196,7 +196,8 @@ struct PatchView: View {
     }
 
     private func isLoud(_ level: Float) -> Bool {
-        // Небольшой допуск: 8 шагов из 16 система может вернуть как 0.4999….
+        // Небольшой допуск на погрешность Float. Шаг громкости на iPhone — 1/16,
+        // так что 70% наступает на 12-м шаге из 16 (75%).
         level >= requiredLevel - 0.01
     }
 

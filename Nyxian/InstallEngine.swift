@@ -46,6 +46,11 @@ final class InstallEngine: ObservableObject {
         var kind: LogLine.Kind = .info
     }
 
+    /// Сколько длится вся «установка» — сценарий ниже сжимается под это время целиком.
+    static let totalDuration: TimeInterval = 35
+    /// Пауза на «Требуется ручной патч» перед экраном патча (входит в totalDuration).
+    private static let finishPause: TimeInterval = 1.2
+
     static let packageSizeMB = 48.6
     private static let downloadRange = 13.0...52.0
 
@@ -67,15 +72,18 @@ final class InstallEngine: ObservableObject {
 
     func start(onFinish: @escaping () -> Void) {
         guard task == nil else { return }
+        let script = Self.makeScript()
+        let scriptLength = script.reduce(0) { $0 + $1.duration }
+        let timeScale = (Self.totalDuration - Self.finishPause) / scriptLength
         task = Task {
-            for step in Self.makeScript() {
+            for step in script {
                 apply(step)
                 // Небольшой разброс, чтобы каждый запуск выглядел по-разному.
-                await advance(to: step.to, over: step.duration * Double.random(in: 0.95...1.15))
+                await advance(to: step.to, over: step.duration * timeScale * Double.random(in: 0.9...1.1))
             }
             isFinished = true
             UINotificationFeedbackGenerator().notificationOccurred(.warning)
-            try? await Task.sleep(nanoseconds: 1_200_000_000)
+            try? await Task.sleep(nanoseconds: UInt64(Self.finishPause * 1_000_000_000))
             onFinish()
         }
     }
@@ -97,8 +105,9 @@ final class InstallEngine: ObservableObject {
         let start = percent
         let begin = Date()
         while !Task.isCancelled {
-            // Неровный шаг обновления — как у настоящих установщиков.
-            let tick = Double.random(in: 0.08...0.3)
+            // Неровный шаг обновления — как у настоящих установщиков, но без перебора по времени.
+            let remaining = duration - Date().timeIntervalSince(begin)
+            let tick = min(Double.random(in: 0.08...0.3), max(remaining, 0.01))
             try? await Task.sleep(nanoseconds: UInt64(tick * 1_000_000_000))
             let t = min(Date().timeIntervalSince(begin) / duration, 1)
             percent = start + (target - start) * t

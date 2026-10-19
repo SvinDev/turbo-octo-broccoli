@@ -6,7 +6,10 @@ enum DeviceInfo {
     }
 
     /// Общий диапазон всех эксплоитов: landa — с 16.0 (ниже приложение не ставится), CryptSn0w — до 27.1.
-    static let supportedRange = "16.0 – 27.1"
+    /// Отсюда же берутся подпись сверху и диапазоны эксплоитов, чтобы всё совпадало.
+    static let minSupported = "16.0"
+    static let maxSupported = "27.1"
+    static let supportedRange = "\(minSupported) – \(maxSupported)"
 
     /// Версия iOS как (major, minor, patch) — удобно сравнивать: version < (17, 0, 0).
     static var version: (Int, Int, Int) {

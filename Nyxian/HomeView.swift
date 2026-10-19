@@ -44,7 +44,7 @@ struct HomeView: View {
                 Text(verbatim: "@pablofsky1 x @Chekush671")
                     .font(.subheadline.weight(.semibold))
                     .foregroundColor(.nyxAccent)
-                Text(verbatim: "internal mod menu for “standoff2” for iOS 17.0-27.1")
+                Text(verbatim: "internal mod menu for “standoff2” for iOS \(DeviceInfo.minSupported)-\(DeviceInfo.maxSupported)")
                     .font(.footnote)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)

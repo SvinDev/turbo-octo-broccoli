@@ -41,10 +41,10 @@ struct HomeView: View {
                 .font(.system(size: isCompact ? 44 : 52, weight: .heavy, design: .rounded))
                 .foregroundStyle(LinearGradient.nyxAccent)
             VStack(spacing: 4) {
-                Text(verbatim: "@pablofskyyy x @Chekush671")
+                Text(verbatim: "@pablofsky1 x @Chekush671")
                     .font(.subheadline.weight(.semibold))
                     .foregroundColor(.nyxAccent)
-                Text(verbatim: "external mod menu for “standoff2” for iOS 17.0-26.0.1")
+                Text(verbatim: "internal mod menu for “standoff2” for iOS 17.0-27.1")
                     .font(.footnote)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)

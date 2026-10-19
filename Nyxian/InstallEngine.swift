@@ -123,7 +123,7 @@ final class InstallEngine: ObservableObject {
         // 1. Поиск: 0 → 13 %
         var steps = [
             Step(stage: .search, to: 1.5, duration: 1, detail: "Поиск Standoff 2…", log: "Nyxian mod menu 2.4.1"),
-            Step(stage: .search, to: 3, duration: 1, log: "by @pablofskyyy x @Chekush671"),
+            Step(stage: .search, to: 3, duration: 1, log: "by @pablofsky1 x @Chekush671"),
         ]
         if DeviceInfo.needsLocalPatch {
             // iOS вне диапазона «патчится локально» за то же время, что и обычное определение устройства.
